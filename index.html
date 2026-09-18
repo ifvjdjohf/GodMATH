@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>工具箱與高斯消去法計算器</title>
+  <title>工具箱👍🏻👍🏻</title>
+  <!-- KaTeX 數學公式渲染 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
   <style>
     /* --------------------------------------------------
        全站基礎與暗色主題設定 (CSS Variables)
@@ -162,7 +167,7 @@
     }
 
     /* --------------------------------------------------
-       彈窗 / Modal (高斯消去法工具)
+       彈窗 / Modal 通用樣式
     -------------------------------------------------- */
     .modal-overlay {
       display: none;
@@ -250,6 +255,12 @@
 
     .btn:hover {
       background: #3b3b4a;
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
     }
 
     .btn-primary {
@@ -368,6 +379,80 @@
       padding: 0 2px;
     }
 
+    /* --------------------------------------------------
+       Gemini AI 專用樣式
+    -------------------------------------------------- */
+    .ai-input-text {
+      width: 100%;
+      height: 100px;
+      background: var(--bg-color);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    .ai-input-text:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .ai-response-box {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.25rem;
+      color: var(--text-main);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* --------------------------------------------------
+       函數圖形 專用樣式
+    -------------------------------------------------- */
+    .symbol-btn-group {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 420px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .canvas-container:active {
+      cursor: grabbing;
+    }
+
+    #plot-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .plot-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
     /* 響應式佈局 */
     @media (max-width: 768px) {
       .grid-container {
@@ -399,9 +484,15 @@
       <div class="card interactive" onclick="openGaussModal()">
         <h3 class="card-title">高斯消去法計算工具</h3>
       </div>
-      <!-- 2 ~ 9 預留位置 -->
-      <div class="card card-placeholder"><span class="card-title">預留位置</span></div>
-      <div class="card card-placeholder"><span class="card-title">預留位置</span></div>
+      <!-- 2. Gemini 數學知識 AI 導師卡片 -->
+      <div class="card interactive" onclick="openGeminiModal()">
+        <h3 class="card-title">🤖 Gemini 數學知識 AI 導師</h3>
+      </div>
+      <!-- 3. 函數圖形繪製卡片 -->
+      <div class="card interactive" onclick="openPlotModal()">
+        <h3 class="card-title">📈 函數圖形繪製工具</h3>
+      </div>
+      <!-- 4 ~ 9 預留位置 -->
       <div class="card card-placeholder"><span class="card-title">預留位置</span></div>
       <div class="card card-placeholder"><span class="card-title">預留位置</span></div>
       <div class="card card-placeholder"><span class="card-title">預留位置</span></div>
@@ -411,7 +502,7 @@
     </div>
   </section>
 
-  <!-- ================= 彈窗：高斯消去法計算工具 ================= -->
+  <!-- ================= 彈窗 1：高斯消去法計算工具 ================= -->
   <div id="gauss-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -448,6 +539,93 @@
     </div>
   </div>
 
+  <!-- ================= 彈窗 2：Gemini 數學知識 AI 導師 ================= -->
+  <div id="gemini-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🤖 Gemini 數學與科學 AI 導師</h3>
+        <button class="close-btn" onclick="closeGeminiModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label>Gemini API Key：</label>
+          <input type="password" id="gemini-api-key" class="input-num" style="width: 250px; text-align: left;" placeholder="請在此貼上 API Key">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">（僅存於本機瀏覽器，不會上傳）</span>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: 0.5rem;">請輸入你想請教的數學或科學問題：</label>
+          <textarea id="gemini-prompt" class="ai-input-text" placeholder="例如：請解釋高斯消去法中的 Pivot 選取原則，或詳細推導 sin(a+b) 公式..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-primary" onclick="askGeminiAI()">傳送請教 AI 導師</button>
+        </div>
+
+        <div id="gemini-response-section" style="display: none;">
+          <h4 style="margin-bottom: 0.5rem;">AI 導師解答：</h4>
+          <div id="gemini-response" class="ai-response-box"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈窗 3：函數圖形繪製工具 ================= -->
+  <div id="plot-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📈 函數圖形繪製工具</h3>
+        <button class="close-btn" onclick="closePlotModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- 上方：輸入區 -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div class="form-group" style="width: 100%;">
+            <label style="font-weight: 600;">f(x) = </label>
+            <input type="text" id="func-input" class="ai-input-text" style="height: 42px; flex: 1; padding: 0.5rem 0.8rem; font-family: monospace; font-size: 1.1rem;" value="x^2 - 4" placeholder="例如: sin(x) * x, x^3 - 3*x, sqrt(x)">
+            <button class="btn btn-primary" onclick="drawFunction()">繪製</button>
+          </div>
+          
+          <!-- 常用符號按鈕 -->
+          <div class="symbol-btn-group">
+            <button class="btn btn-sm" onclick="insertSymbol('x')">x</button>
+            <button class="btn btn-sm" onclick="insertSymbol('^')">^</button>
+            <button class="btn btn-sm" onclick="insertSymbol('sin(')">sin</button>
+            <button class="btn btn-sm" onclick="insertSymbol('cos(')">cos</button>
+            <button class="btn btn-sm" onclick="insertSymbol('tan(')">tan</button>
+            <button class="btn btn-sm" onclick="insertSymbol('sqrt(')">sqrt</button>
+            <button class="btn btn-sm" onclick="insertSymbol('log(')">ln</button>
+            <button class="btn btn-sm" onclick="insertSymbol('abs(')">abs</button>
+            <button class="btn btn-sm" onclick="insertSymbol('exp(')">exp</button>
+            <button class="btn btn-sm" onclick="insertSymbol('pi')">π</button>
+            <button class="btn btn-sm" onclick="insertSymbol('e')">e</button>
+          </div>
+        </div>
+
+        <!-- 中間：Canvas 畫布區 -->
+        <div class="canvas-container" id="canvas-container">
+          <canvas id="plot-canvas"></canvas>
+        </div>
+
+        <!-- 下方：控制項與提示 -->
+        <div class="plot-controls">
+          <div>
+            <span>💡 提示：使用<b>滑鼠滾輪</b>放大/縮小，<b>拖曳</b>可平移視角</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm" onclick="zoomPlot(1.2)">放大 +</button>
+            <button class="btn btn-sm" onclick="zoomPlot(0.8)">縮小 -</button>
+            <button class="btn btn-sm" onclick="resetPlotView()">重置視角</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script>
     /* ==================================================
        1. 頁面切換控制 (SPA Navigation)
@@ -469,6 +647,27 @@
 
     function closeGaussModal() {
       document.getElementById('gauss-modal').classList.remove('active');
+    }
+
+    function openGeminiModal() {
+      document.getElementById('gemini-modal').classList.add('active');
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        document.getElementById('gemini-api-key').value = savedKey;
+      }
+    }
+
+    function closeGeminiModal() {
+      document.getElementById('gemini-modal').classList.remove('active');
+    }
+
+    function openPlotModal() {
+      document.getElementById('plot-modal').classList.add('active');
+      setTimeout(initPlotCanvas, 100); // 確保 modal 渲染完成後取得 Canvas 尺寸
+    }
+
+    function closePlotModal() {
+      document.getElementById('plot-modal').classList.remove('active');
     }
 
     /* ==================================================
@@ -496,170 +695,4 @@
 
       add(f) { return new Fraction(this.n * f.d + f.n * this.d, this.d * f.d); }
       sub(f) { return new Fraction(this.n * f.d - f.n * this.d, this.d * f.d); }
-      mul(f) { return new Fraction(this.n * f.n, this.d * f.d); }
-      div(f) { return new Fraction(this.n * f.d, this.d * f.n); }
-      isZero() { return this.n === 0; }
-      
-      // 輸出為 HTML 格式（避免小數點）
-      toHTML() {
-        if (this.d === 1) return `${this.n}`;
-        if (this.n < 0) {
-          return `-<span class="fraction"><span class="num">${Math.abs(this.n)}</span><span class="den">${this.d}</span></span>`;
-        }
-        return `<span class="fraction"><span class="num">${this.n}</span><span class="den">${this.d}</span></span>`;
-      }
-
-      toString() {
-        return this.d === 1 ? `${this.n}` : `${this.n}/${this.d}`;
-      }
-    }
-
-    /* ==================================================
-       4. 動態 UI 產生與輸入處理 (含數字鍵盤與輸入過濾)
-    ================================================== */
-    let currentM = 3, currentN = 4;
-
-    function generateMatrixInput() {
-      const m = parseInt(document.getElementById('input-m').value);
-      const n = parseInt(document.getElementById('input-n').value) + 1;
-
-      if (isNaN(m) || isNaN(n) || m < 1 || n < 2) {
-        alert("請輸入有效的列數與行數！");
-        return;
-      }
-
-      currentM = m;
-      currentN = n;
-
-      const table = document.getElementById('matrix-table');
-      table.innerHTML = '';
-
-      for (let i = 0; i < m; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < n; j++) {
-          const td = document.createElement('td');
-          if (j === n - 2) td.classList.add('augmented-sep'); // 增廣矩陣分隔線
-          
-          const input = document.createElement('input');
-          input.type = 'text'; 
-          input.inputMode = 'numeric'; // 觸發行動裝置數字鍵盤
-          input.pattern = '[0-9]*';
-          input.id = `cell-${i}-${j}`;
-          input.value = (i === j) ? '1' : '0';
-
-          // 1. 阻止輸入 e, +, . 等非整數符號
-          input.addEventListener('keydown', function(e) {
-            if (['e', 'E', '.', '+'].includes(e.key)) {
-              e.preventDefault();
-            }
-          });
-
-          // 2. 自動清理黏貼或不合法的非整數字元 (僅允許開頭為負號與數字)
-          input.addEventListener('input', function() {
-            let isNegative = this.value.startsWith('-');
-            let cleanValue = this.value.replace(/[^0-9]/g, '');
-            this.value = (isNegative ? '-' : '') + cleanValue;
-          });
-
-          td.appendChild(input);
-          tr.appendChild(td);
-        }
-        table.appendChild(tr);
-      }
-
-      document.getElementById('matrix-input-section').style.display = 'block';
-      document.getElementById('output-section').innerHTML = '';
-    }
-
-    function clearMatrixInputs() {
-      for (let i = 0; i < currentM; i++) {
-        for (let j = 0; j < currentN; j++) {
-          document.getElementById(`cell-${i}-${j}`).value = 0;
-        }
-      }
-    }
-
-    /* ==================================================
-       5. 高斯消去法邏輯與步驟記錄 (Gaussian Elimination)
-    ================================================== */
-    function renderMatrixHTML(mat) {
-      let html = '<div class="matrix-display"><table class="matrix-table">';
-      for (let i = 0; i < mat.length; i++) {
-        html += '<tr>';
-        for (let j = 0; j < mat[i].length; j++) {
-          html += `<td>${mat[i][j].toHTML()}</td>`;
-        }
-        html += '</tr>';
-      }
-      html += '</table></div>';
-      return html;
-    }
-
-    function calculateGauss() {
-      const output = document.getElementById('output-section');
-      output.innerHTML = '<h4 style="margin-top:1rem;">計算步驟與結果：</h4><div class="steps-container" id="steps-list"></div>';
-      const stepsList = document.getElementById('steps-list');
-
-      // 讀取輸入並轉為 Fraction 矩陣
-      let A = [];
-      for (let i = 0; i < currentM; i++) {
-        let row = [];
-        for (let j = 0; j < currentN; j++) {
-          const val = parseInt(document.getElementById(`cell-${i}-${j}`).value) || 0;
-          row.push(new Fraction(val, 1));
-        }
-        A.push(row);
-      }
-
-      function addStep(title, matrixState) {
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'step-card';
-        stepDiv.innerHTML = `<div class="step-title">${title}</div>${renderMatrixHTML(matrixState)}`;
-        stepsList.appendChild(stepDiv);
-      }
-
-      addStep("初始增廣矩陣 state:", A);
-
-      let pivotRow = 0;
-      for (let col = 0; col < currentN - 1 && pivotRow < currentM; col++) {
-        // 尋找主元 (Pivot)
-        let sel = pivotRow;
-        while (sel < currentM && A[sel][col].isZero()) {
-          sel++;
-        }
-
-        if (sel === currentM) continue; // 當前欄全為 0，跳過
-
-        // 交換列
-        if (sel !== pivotRow) {
-          [A[pivotRow], A[sel]] = [A[sel], A[pivotRow]];
-          addStep(`交換第 ${pivotRow + 1} 列 與 第 ${sel + 1} 列`, A);
-        }
-
-        // 將主元所在列首項化為 1 (Row scaling)
-        let pivotVal = A[pivotRow][col];
-        if (pivotVal.n !== pivotVal.d) { // 非 1
-          for (let j = col; j < currentN; j++) {
-            A[pivotRow][j] = A[pivotRow][j].div(pivotVal);
-          }
-          addStep(`將第 ${pivotRow + 1} 列乘以 ${new Fraction(pivotVal.d, pivotVal.n).toHTML()}（使主元為 1）`, A);
-        }
-
-        // 消去下方與上方的列 (RREF 消去)
-        for (let i = 0; i < currentM; i++) {
-          if (i !== pivotRow && !A[i][col].isZero()) {
-            let factor = A[i][col];
-            for (let j = col; j < currentN; j++) {
-              A[i][j] = A[i][j].sub(factor.mul(A[pivotRow][j]));
-            }
-            addStep(`將第 ${i + 1} 列減去 (第 ${pivotRow + 1} 列 &times; ${factor.toHTML()})`, A);
-          }
-        }
-        pivotRow++;
-      }
-
-      addStep("最終簡約列梯形式 (RREF) 求解完成", A);
-    }
-  </script>
-</body>
-</html>
+      mul(f)
