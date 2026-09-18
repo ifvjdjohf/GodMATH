@@ -108,19 +108,83 @@
     }
 
     /* --------------------------------------------------
-       頁面 2：3x3 / 多格網格選單 UI
+       頁面 2：功能選單 UI 與工具列
     -------------------------------------------------- */
     .menu-header {
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .menu-title {
       font-size: 2rem;
       font-weight: 700;
+    }
+
+    .toolbar-section {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 0.2rem;
+    }
+
+    .btn-tool {
+      background: #2b2b36;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tool:hover {
+      background: #3b3b4a;
+      border-color: var(--primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-external {
+      background: rgba(168, 85, 247, 0.1);
+      border-color: rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+    }
+
+    .btn-external:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #a855f7;
+      color: #fff;
     }
 
     .grid-container {
@@ -167,6 +231,70 @@
     .card-subtitle {
       font-size: 0.85rem;
       color: var(--text-muted);
+    }
+
+    /* --------------------------------------------------
+       進制轉換器與反三角函數專用 Layout
+    -------------------------------------------------- */
+    .base-conv-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: center;
+      width: 100%;
+      background: rgba(0,0,0,0.2);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .base-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .base-box label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .swap-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .swap-btn:hover {
+      background: var(--primary-hover);
+      transform: rotate(180deg);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      background: rgba(0,0,0,0.2);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .radio-group label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.95rem;
     }
 
     /* --------------------------------------------------
@@ -288,7 +416,7 @@
       flex-wrap: wrap;
     }
 
-    .input-text, .input-num {
+    .input-text, .input-num, .select-base {
       padding: 0.5rem;
       border-radius: 6px;
       border: 1px solid var(--border-color);
@@ -362,7 +490,7 @@
       color: #a5b4fc;
     }
 
-    /* 原有高等計算機樣式 */
+    /* 高等計算機樣式 */
     #calc-modal .modal-content { max-width: 540px; }
     .calc-display-wrapper {
       background: #0d0d14; border: 1px solid var(--border-color); border-radius: 10px;
@@ -389,6 +517,9 @@
     @media (max-width: 768px) {
       .grid-container { grid-template-columns: repeat(1, 1fr); }
       .home-title { font-size: 2.8rem; }
+      .toolbar-section { flex-direction: column; align-items: stretch; }
+      .base-conv-top { grid-template-columns: 1fr; gap: 0.75rem; }
+      .swap-btn { margin: 0 auto; }
     }
   </style>
 </head>
@@ -401,63 +532,86 @@
     <button class="btn-gradient" onclick="navigateTo('page-menu')">進入功能選單</button>
   </section>
 
-  <!-- ================= 頁面 2：功能選單 (3x3 網格擴充) ================= -->
+  <!-- ================= 頁面 2：功能選單 ================= -->
   <section id="page-menu" class="view">
     <div class="menu-header">
       <h2 class="menu-title">功能選單</h2>
       <button class="btn" onclick="navigateTo('page-home')">返回首頁</button>
     </div>
+
+    <!-- 外鏈選單工具列 -->
+    <div class="toolbar-section">
+      <div class="toolbar-group">
+        <span class="toolbar-label">🔗 外部工具跳轉：</span>
+        <a href="https://gemini.google.com" target="_blank" class="btn-tool btn-external">Gemini</a>
+        <a href="https://www.desmos.com/calculator" target="_blank" class="btn-tool btn-external">Desmos</a>
+        <a href="https://chatgpt.com" target="_blank" class="btn-tool btn-external">GPT</a>
+        <a href="https://www.youtube.com" target="_blank" class="btn-tool btn-external">YT</a>
+      </div>
+    </div>
     
     <div class="grid-container">
-      <!-- 原有工具 1 -->
+      <!-- 工具 1 -->
       <div class="card interactive" onclick="openGaussModal()">
         <h3 class="card-title">高斯消去法計算工具</h3>
         <p class="card-subtitle">精確分數運算 / RREF 求解</p>
       </div>
 
-      <!-- 原有工具 2 -->
+      <!-- 工具 2 -->
       <div class="card interactive" onclick="openCalcModal()">
         <h3 class="card-title">🔢 高等計算機</h3>
         <p class="card-subtitle">科學計算 / 三角函數 / 歷史記錄</p>
       </div>
 
-      <!-- 新增工具 1：矩陣分解 -->
+      <!-- 工具 3：多進制換算器（新增大卡片） -->
+      <div class="card interactive" onclick="openModal('base-modal')">
+        <h3 class="card-title">🔄 多進制換算器</h3>
+        <p class="card-subtitle">2 / 8 / 10 / 16 / 36 進制雙向自由轉換</p>
+      </div>
+
+      <!-- 工具 4：反三角函數計算器（新增大卡片） -->
+      <div class="card interactive" onclick="openModal('asin-modal')">
+        <h3 class="card-title">📐 反三角函數計算器</h3>
+        <p class="card-subtitle">arcsin / arccos / arctan (角度/弧度切換)</p>
+      </div>
+
+      <!-- 工具 5 -->
       <div class="card interactive" onclick="openModal('decomp-modal')">
         <h3 class="card-title">矩陣分解工具</h3>
         <p class="card-subtitle">LU / QR (Gram-Schmidt) / 特徵分解 / SVD</p>
       </div>
 
-      <!-- 新增工具 2：行列式與逆矩陣 -->
+      <!-- 工具 6 -->
       <div class="card interactive" onclick="openModal('det-modal')">
         <h3 class="card-title">行列式與逆矩陣</h3>
-        <p class="card-subtitle">Det / Trace / 逆矩陣 / 條件數 κ(A)</p>
+        <p class="card-subtitle">Det / Trace / 逆矩陣 (分數精確化)</p>
       </div>
 
-      <!-- 新增工具 3：線性系統疊代求解 -->
+      <!-- 工具 7 -->
       <div class="card interactive" onclick="openModal('iter-modal')">
         <h3 class="card-title">線性系統疊代法</h3>
         <p class="card-subtitle">Jacobi / Gauss-Seidel / SOR 逐輪收斂</p>
       </div>
 
-      <!-- 新增工具 4：非線性方程求解 -->
+      <!-- 工具 8 -->
       <div class="card interactive" onclick="openModal('root-modal')">
         <h3 class="card-title">非線性方程求根</h3>
         <p class="card-subtitle">二分法 / 牛頓法 / 割線法</p>
       </div>
 
-      <!-- 新增工具 5：數值微積分 -->
+      <!-- 工具 9 -->
       <div class="card interactive" onclick="openModal('calc-num-modal')">
         <h3 class="card-title">數值微積分</h3>
         <p class="card-subtitle">梯形法 / Simpson 法則 / 差分微分</p>
       </div>
 
-      <!-- 新增工具 6：插值與曲線擬合 -->
+      <!-- 工具 10 -->
       <div class="card interactive" onclick="openModal('interp-modal')">
         <h3 class="card-title">插值與最小二乘法</h3>
         <p class="card-subtitle">Lagrange / Newton 插值 / 多項式擬合</p>
       </div>
 
-      <!-- 新增工具 7：常微分方程數值解 -->
+      <!-- 工具 11 -->
       <div class="card interactive" onclick="openModal('ode-modal')">
         <h3 class="card-title">常微分方程數值解 (ODE)</h3>
         <p class="card-subtitle">Euler / 補償 Euler / 經典 RK4</p>
@@ -465,7 +619,86 @@
     </div>
   </section>
 
-  <!-- ================= 彈窗 1：高斯消去法計算工具 (原版保留) ================= -->
+  <!-- ================= 彈窗：多進制換算器 ================= -->
+  <div id="base-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🔄 多進制換算器 (Base Converter)</h3>
+        <button class="close-btn" onclick="closeModal('base-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="base-conv-top">
+          <div class="base-box">
+            <label>來源進制 (Base)</label>
+            <select id="src-base" class="select-base" onchange="convertBase()">
+              <option value="2">2 進制 (Binary)</option>
+              <option value="8">8 進制 (Octal)</option>
+              <option value="10" selected>10 進制 (Decimal)</option>
+              <option value="16">16 進制 (Hexadecimal)</option>
+              <option value="36">36 進制 (Base-36)</option>
+            </select>
+          </div>
+          <button class="swap-btn" onclick="swapBases()" title="對調進制">↔</button>
+          <div class="base-box">
+            <label>目標進制 (Base)</label>
+            <select id="tgt-base" class="select-base" onchange="convertBase()">
+              <option value="2" selected>2 進制 (Binary)</option>
+              <option value="8">8 進制 (Octal)</option>
+              <option value="10">10 進制 (Decimal)</option>
+              <option value="16">16 進制 (Hexadecimal)</option>
+              <option value="36">36 進制 (Base-36)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="flex-direction: column; align-items: stretch; gap: 0.5rem; margin-top:0.5rem;">
+          <label style="font-weight: 600;">請輸入數值：</label>
+          <input type="text" id="base-input" class="input-text" placeholder="例如：255 或 11111111" value="255" oninput="convertBase()" style="font-size: 1.1rem; padding: 0.75rem;">
+        </div>
+
+        <div class="result-card">
+          <div class="result-title">換算結果</div>
+          <div id="base-output-val" style="font-size: 1.5rem; font-weight: 700; color: #4ade80; word-break: break-all; font-family: monospace;">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈窗：反三角函數計算器 ================= -->
+  <div id="asin-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📐 反三角函數計算器</h3>
+        <button class="close-btn" onclick="closeModal('asin-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="radio-group">
+          <span style="font-weight:600; color:var(--text-muted);">輸出單位：</span>
+          <label><input type="radio" name="inv-unit" value="deg" checked onchange="calcInvTrig()"> 角度 (Degrees °)</label>
+          <label><input type="radio" name="inv-unit" value="rad" onchange="calcInvTrig()"> 弧度 (Radians rad)</label>
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+          <div style="display:flex; flex-direction:column; gap:0.3rem;">
+            <label style="font-size:0.85rem; color:var(--text-muted);">輸入 x 值 [-1, 1]</label>
+            <input type="text" id="inv-x-asin" class="input-text" value="0.5" oninput="calcInvTrig()">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.3rem;">
+            <label style="font-size:0.85rem; color:var(--text-muted);">輸入 x 值 [-1, 1]</label>
+            <input type="text" id="inv-x-acos" class="input-text" value="0.5" oninput="calcInvTrig()">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.3rem;">
+            <label style="font-size:0.85rem; color:var(--text-muted);">輸入 x 值 (任意實數)</label>
+            <input type="text" id="inv-x-atan" class="input-text" value="1" oninput="calcInvTrig()">
+          </div>
+        </div>
+
+        <div id="inv-trig-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 彈窗 1：高斯消去法計算工具 ================= -->
   <div id="gauss-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -495,7 +728,7 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 2：高等計算機 (原版保留) ================= -->
+  <!-- ================= 彈窗 2：高等計算機 ================= -->
   <div id="calc-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -578,11 +811,11 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 4：行列式、逆矩陣與條件數 ================= -->
+  <!-- ================= 彈窗 4：行列式、逆矩陣 ================= -->
   <div id="det-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">行列式與逆矩陣分析</h3>
+        <h3 class="modal-title">行列式與逆矩陣分析 (分數精確運算)</h3>
         <button class="close-btn" onclick="closeModal('det-modal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -592,7 +825,7 @@
           <button class="btn btn-primary" onclick="initMatrixInput('det-grid', 'det-n', 'det-n')">生成輸入表</button>
         </div>
         <div id="det-grid" class="matrix-grid-wrapper"></div>
-        <button class="btn btn-primary" onclick="runDetInverse()">分析矩陣 (Det, Trace, 逆矩陣)</button>
+        <button class="btn btn-primary" onclick="runDetInverse()">分析矩陣 (Det, Trace, 分數逆矩陣)</button>
         <div id="det-output"></div>
       </div>
     </div>
@@ -757,6 +990,8 @@
     function openModal(id) {
       document.getElementById(id).classList.add('active');
       document.body.classList.add('modal-open');
+      if (id === 'base-modal') convertBase();
+      if (id === 'asin-modal') calcInvTrig();
     }
 
     function closeModal(id) {
@@ -764,14 +999,86 @@
       document.body.classList.remove('modal-open');
     }
 
-    // 保留原高斯與計算機 Modal 接口
     function openGaussModal() { openModal('gauss-modal'); generateMatrixInput(); }
     function closeGaussModal() { closeModal('gauss-modal'); }
     function openCalcModal() { openModal('calc-modal'); }
     function closeCalcModal() { closeModal('calc-modal'); }
 
     /* --------------------------------------------------
-       2. KaTeX 數學渲染與通用工具
+       2. 小工具：多進制換算器 (Base Converter)
+    -------------------------------------------------- */
+    function swapBases() {
+      const srcSelect = document.getElementById('src-base');
+      const tgtSelect = document.getElementById('tgt-base');
+      const temp = srcSelect.value;
+      srcSelect.value = tgtSelect.value;
+      tgtSelect.value = temp;
+      convertBase();
+    }
+
+    function convertBase() {
+      const srcBase = parseInt(document.getElementById('src-base').value);
+      const tgtBase = parseInt(document.getElementById('tgt-base').value);
+      const inputStr = document.getElementById('base-input').value.trim();
+      const outputEl = document.getElementById('base-output-val');
+
+      if (!inputStr) {
+        outputEl.textContent = '-';
+        return;
+      }
+
+      try {
+        const decVal = parseInt(inputStr, srcBase);
+        if (isNaN(decVal)) {
+          outputEl.textContent = '❌ 非法的數值格式';
+          outputEl.style.color = '#f87171';
+          return;
+        }
+        const converted = decVal.toString(tgtBase).toUpperCase();
+        outputEl.textContent = converted;
+        outputEl.style.color = '#4ade80';
+      } catch (e) {
+        outputEl.textContent = '❌ 計算錯誤';
+        outputEl.style.color = '#f87171';
+      }
+    }
+
+    /* --------------------------------------------------
+       3. 小工具：反三角函數計算器 (Inverse Trigonometric)
+    -------------------------------------------------- */
+    function calcInvTrig() {
+      const unit = document.querySelector('input[name="inv-unit"]:checked').value;
+      const isDeg = unit === 'deg';
+      const radToDeg = 180 / Math.PI;
+
+      const xAsin = parseFloat(document.getElementById('inv-x-asin').value);
+      const xAcos = parseFloat(document.getElementById('inv-x-acos').value);
+      const xAtan = parseFloat(document.getElementById('inv-x-atan').value);
+
+      const formatVal = (val) => {
+        if (isNaN(val)) return '<span style="color:#f87171">無定義 (Domain Error)</span>';
+        let res = isDeg ? val * radToDeg : val;
+        let suffix = isDeg ? '°' : ' rad';
+        return `<strong>${res.toFixed(6)}${suffix}</strong>`;
+      };
+
+      const valAsin = Math.asin(xAsin);
+      const valAcos = Math.acos(xAcos);
+      const valAtan = Math.atan(xAtan);
+
+      const outContainer = document.getElementById('inv-trig-output');
+      outContainer.innerHTML = `
+        <div class="result-card">
+          <div class="result-title">反三角函數計算結果 (${isDeg ? '角度 °' : '弧度 rad'})</div>
+          <p style="margin-bottom:0.4rem;">arcsin(${xAsin}) = ${formatVal(valAsin)}</p>
+          <p style="margin-bottom:0.4rem;">arccos(${xAcos}) = ${formatVal(valAcos)}</p>
+          <p>arctan(${xAtan}) = ${formatVal(valAtan)}</p>
+        </div>
+      `;
+    }
+
+    /* --------------------------------------------------
+       4. KaTeX 數學渲染與通用工具
     -------------------------------------------------- */
     function renderLaTeX(latex, displayMode = true) {
       if (typeof katex === 'undefined') return latex;
@@ -790,6 +1097,17 @@
           let val = mat[i][j];
           row.push(Math.abs(val) < 1e-10 ? "0" : Number(val.toFixed(4)).toString());
         }
+        html += row.join(" & ");
+        if (i < mat.length - 1) html += " \\\\ ";
+      }
+      html += "\\end{bmatrix}";
+      return html;
+    }
+
+    function matrixFractionToLaTeX(mat) {
+      let html = "\\begin{bmatrix}";
+      for (let i = 0; i < mat.length; i++) {
+        let row = mat[i].map(f => f.toLaTeX());
         html += row.join(" & ");
         if (i < mat.length - 1) html += " \\\\ ";
       }
@@ -830,7 +1148,7 @@
     }
 
     /* --------------------------------------------------
-       3. 自訂動態表達式解析器 (Math Parser)
+       5. 自訂動態表達式解析器 (Math Parser)
     -------------------------------------------------- */
     function evaluateMath(expr, scope = {}) {
       let jsExpr = expr
@@ -851,9 +1169,37 @@
     }
 
     /* --------------------------------------------------
-       4. 線性代數與數值矩陣演算法 (Decompositions & Solvers)
+       6. 分數演算類別 (Fraction Class)
     -------------------------------------------------- */
-    // LU 分解
+    function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { let t = b; b = a % b; a = t; } return a; }
+    class Fraction {
+      constructor(n, d = 1) {
+        if (typeof n === 'string' && n.includes('/')) {
+          let parts = n.split('/');
+          n = parseInt(parts[0]);
+          d = parseInt(parts[1]);
+        }
+        if (d === 0) throw new Error("分母不能為 0");
+        if (d < 0) { n = -n; d = -d; }
+        const g = gcd(Math.round(n), Math.round(d));
+        this.n = Math.round(n) / g;
+        this.d = Math.round(d) / g;
+      }
+      add(f) { return new Fraction(this.n * f.d + f.n * this.d, this.d * f.d); }
+      sub(f) { return new Fraction(this.n * f.d - f.n * this.d, this.d * f.d); }
+      mul(f) { return new Fraction(this.n * f.n, this.d * f.d); }
+      div(f) { return new Fraction(this.n * f.d, this.d * f.n); }
+      isZero() { return this.n === 0; }
+      toLaTeX() {
+        if (this.d === 1) return `${this.n}`;
+        return this.n < 0 ? `-\\frac{${Math.abs(this.n)}}{${this.d}}` : `\\frac{${this.n}}{${this.d}}`;
+      }
+      toNumber() { return this.n / this.d; }
+    }
+
+    /* --------------------------------------------------
+       7. 線性代數與數值矩陣演算法
+    -------------------------------------------------- */
     function runLUDecomp() {
       const n = parseInt(document.getElementById('decomp-n').value);
       const A = readMatrixValues('decomp-grid', n, n);
@@ -886,7 +1232,6 @@
       `;
     }
 
-    // QR 分解 (Gram-Schmidt)
     function runQRDecomp() {
       const n = parseInt(document.getElementById('decomp-n').value);
       const A = readMatrixValues('decomp-grid', n, n);
@@ -916,7 +1261,6 @@
       `;
     }
 
-    // 特徵值計算 (Power Iteration 範例展示首要特徵值)
     function runEigDecomp() {
       const n = parseInt(document.getElementById('decomp-n').value);
       const A = readMatrixValues('decomp-grid', n, n);
@@ -941,76 +1285,80 @@
       `;
     }
 
-    // 全域變數供按鈕切換顯示反矩陣
-    let currentInverseMatrix = null;
+    let currentInverseMatrixFrac = null;
 
-    // 行列式與逆矩陣求解 (高斯-若爾當消去法)
     function runDetInverse() {
       const n = parseInt(document.getElementById('det-n').value);
-      const A = readMatrixValues('det-grid', n, n);
+      const rawA = readMatrixValues('det-grid', n, n);
 
-      function getDet(M) {
-        if (M.length === 1) return M[0][0];
-        if (M.length === 2) return M[0][0] * M[1][1] - M[0][1] * M[1][0];
-        let det = 0;
-        for (let i = 0; i < M.length; i++) {
+      function getDetFrac(M) {
+        let size = M.length;
+        if (size === 1) return M[0][0];
+        if (size === 2) return M[0][0].mul(M[1][1]).sub(M[0][1].mul(M[1][0]));
+        let det = new Fraction(0);
+        for (let i = 0; i < size; i++) {
           let sub = M.slice(1).map(row => row.filter((_, j) => j !== i));
-          det += (i % 2 === 0 ? 1 : -1) * M[0][i] * getDet(sub);
+          let term = M[0][i].mul(getDetFrac(sub));
+          det = (i % 2 === 0) ? det.add(term) : det.sub(term);
         }
         return det;
       }
 
-      function invertMatrix(M) {
+      function invertMatrixFraction(M) {
         let size = M.length;
         let aug = M.map((row, i) => {
-          let identityRow = Array(size).fill(0);
-          identityRow[i] = 1;
-          return [...row, ...identityRow];
+          let identityRow = Array.from({length: size}, (_, idx) => new Fraction(i === idx ? 1 : 0));
+          return [...row.map(v => new Fraction(v.n, v.d)), ...identityRow];
         });
 
         for (let i = 0; i < size; i++) {
           let maxRow = i;
-          for (let k = i + 1; k < size; k++) {
-            if (Math.abs(aug[k][i]) > Math.abs(aug[maxRow][i])) maxRow = k;
-          }
-          [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
+          while (maxRow < size && aug[maxRow][i].isZero()) maxRow++;
+          if (maxRow === size) return null;
+
+          if (maxRow !== i) [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
 
           let pivot = aug[i][i];
-          if (Math.abs(pivot) < 1e-10) return null;
-
-          for (let j = 0; j < 2 * size; j++) aug[i][j] /= pivot;
+          for (let j = 0; j < 2 * size; j++) aug[i][j] = aug[i][j].div(pivot);
 
           for (let k = 0; k < size; k++) {
             if (k !== i) {
               let factor = aug[k][i];
-              for (let j = 0; j < 2 * size; j++) aug[k][j] -= factor * aug[i][j];
+              if (!factor.isZero()) {
+                for (let j = 0; j < 2 * size; j++) {
+                  aug[k][j] = aug[k][j].sub(factor.mul(aug[i][j]));
+                }
+              }
             }
           }
         }
         return aug.map(row => row.slice(size));
       }
 
-      let detA = getDet(A);
-      let traceA = A.reduce((sum, row, idx) => sum + row[idx], 0);
-      let isNonSingular = Math.abs(detA) > 1e-9;
+      let A_frac = rawA.map(row => row.map(v => new Fraction(v)));
+      let detFrac = getDetFrac(A_frac);
+      let isNonSingular = !detFrac.isZero();
+
+      let traceFrac = new Fraction(0);
+      for (let i = 0; i < n; i++) traceFrac = traceFrac.add(A_frac[i][i]);
 
       if (isNonSingular) {
-        currentInverseMatrix = invertMatrix(A);
+        currentInverseMatrixFrac = invertMatrixFraction(A_frac);
       } else {
-        currentInverseMatrix = null;
+        currentInverseMatrixFrac = null;
       }
 
       let html = `
         <div class="result-card">
-          <div class="result-title">矩陣基本特徵分析</div>
-          <p>行列式 det(A) = <strong>${detA.toFixed(6)}</strong></p>
-          <p>跡數 tr(A) = <strong>${traceA.toFixed(6)}</strong></p>
+          <div class="result-title">矩陣基本特徵分析 (精確分數演算)</div>
+          <p>行列式 det(A) = ${renderLaTeX(detFrac.toLaTeX(), false)}</p>
+          <p>跡數 tr(A) = ${renderLaTeX(traceFrac.toLaTeX(), false)}</p>
           <p>反矩陣狀態：${isNonSingular ? '<span style="color:#4ade80">存在 (行列式 ≠ 0)</span>' : '<span style="color:#f87171">不存在 (行列式 = 0)</span>'}</p>
           ${isNonSingular ? `
-            <button id="btn-toggle-inverse" class="btn btn-toggle" style="margin-top: 0.75rem;" onclick="toggleInverseResult()">顯示反矩陣</button>
+            <button id="btn-toggle-inverse" class="btn btn-toggle" style="margin-top: 0.75rem;" onclick="toggleInverseResult()">顯示精確分數反矩陣</button>
             <div id="inverse-matrix-container" style="display: none; margin-top: 1rem;">
-              <p style="color:#a5b4fc; font-weight:600; margin-bottom:0.3rem;">反矩陣 A⁻¹：</p>
-              ${renderLaTeX(matrixToLaTeX(currentInverseMatrix))}
+              <p style="color:#a5b4fc; font-weight:600; margin-bottom:0.3rem;">反矩陣 A⁻¹ (分數無誤差形式)：</p>
+              ${renderLaTeX(matrixFractionToLaTeX(currentInverseMatrixFrac))}
             </div>
           ` : ''}
         </div>
@@ -1019,7 +1367,6 @@
       document.getElementById('det-output').innerHTML = html;
     }
 
-    // 開關顯示/隱藏反矩陣
     function toggleInverseResult() {
       const container = document.getElementById('inverse-matrix-container');
       const btn = document.getElementById('btn-toggle-inverse');
@@ -1029,11 +1376,10 @@
         btn.innerText = '隱藏反矩陣';
       } else {
         container.style.display = 'none';
-        btn.innerText = '顯示反矩陣';
+        btn.innerText = '顯示精確分數反矩陣';
       }
     }
 
-    // 線性系統疊代法 (Jacobi / Gauss-Seidel / SOR)
     function runIterativeSolver(type) {
       const n = parseInt(document.getElementById('iter-n').value);
       const Ab = readMatrixValues('iter-grid', n, n + 1);
@@ -1078,9 +1424,8 @@
     }
 
     /* --------------------------------------------------
-       5. 數值分析與微積分演算法
+       8. 數值分析與微積分演算法
     -------------------------------------------------- */
-    // 非線性方程求根
     function runRootFinding(method) {
       const fxStr = document.getElementById('root-fx').value;
       let a = parseFloat(document.getElementById('root-a').value);
@@ -1124,7 +1469,6 @@
       `;
     }
 
-    // 數值微積分
     function runNumericalIntegration() {
       const fxStr = document.getElementById('integ-fx').value;
       const a = parseFloat(document.getElementById('integ-a').value);
@@ -1133,12 +1477,10 @@
       const f = (x) => evaluateMath(fxStr, { x });
 
       const h = (b - a) / n;
-      // 梯形法
       let trapSum = 0.5 * (f(a) + f(b));
       for (let i = 1; i < n; i++) trapSum += f(a + i * h);
       let trapResult = trapSum * h;
 
-      // Simpson 1/3 法則
       let simpSum = f(a) + f(b);
       for (let i = 1; i < n; i++) simpSum += (i % 2 === 1 ? 4 : 2) * f(a + i * h);
       let simpResult = simpSum * (h / 3);
@@ -1173,7 +1515,7 @@
     }
 
     /* --------------------------------------------------
-       6. 插值與曲線擬合演算法
+       9. 插值與曲線擬合演算法
     -------------------------------------------------- */
     function runLagrangeInterp() {
       const X = document.getElementById('interp-x').value.split(',').map(Number);
@@ -1216,11 +1558,11 @@
     }
 
     function runNewtonInterp() {
-      runLagrangeInterp(); // 簡化展示
+      runLagrangeInterp();
     }
 
     /* --------------------------------------------------
-       7. 常微分方程數值解 (ODEs)
+       10. 常微分方程數值解 (ODEs)
     -------------------------------------------------- */
     function runODESolver(method) {
       const ftyStr = document.getElementById('ode-fty').value;
@@ -1264,7 +1606,7 @@
     }
 
     /* --------------------------------------------------
-       8. 原有高斯消去法與高等計算機邏輯 (完整複製保留)
+       11. 高斯消去法與高等計算機邏輯
     -------------------------------------------------- */
     let calcExpr = '';
     let calcLastResult = null;
@@ -1393,25 +1735,6 @@
       const list = document.getElementById('calc-history-list');
       list.classList.toggle('show');
       if (list.classList.contains('show')) renderCalcHistory();
-    }
-
-    // 原版分數庫與高斯消去法
-    function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { let t = b; b = a % b; a = t; } return a; }
-    class Fraction {
-      constructor(n, d = 1) {
-        if (d === 0) throw new Error("分母不能為 0");
-        if (d < 0) { n = -n; d = -d; }
-        const g = gcd(n, d); this.n = n / g; this.d = d / g;
-      }
-      add(f) { return new Fraction(this.n * f.d + f.n * this.d, this.d * f.d); }
-      sub(f) { return new Fraction(this.n * f.d - f.n * this.d, this.d * f.d); }
-      mul(f) { return new Fraction(this.n * f.n, this.d * f.d); }
-      div(f) { return new Fraction(this.n * f.d, this.d * f.n); }
-      isZero() { return this.n === 0; }
-      toLaTeX() {
-        if (this.d === 1) return `${this.n}`;
-        return this.n < 0 ? `-\\frac{${Math.abs(this.n)}}{${this.d}}` : `\\frac{${this.n}}{${this.d}}`;
-      }
     }
 
     let currentM = 3, currentN = 4;
