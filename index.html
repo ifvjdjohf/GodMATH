@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GodMATH - 工具箱</title>
+  <title>➤ God 𝝅 MATH </title>
   
   <!-- 引入 KaTeX 數學渲染庫 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -271,6 +271,16 @@
       background: var(--primary-hover);
     }
 
+    .btn-toggle {
+      background-color: #10b981;
+      color: white;
+      border: none;
+    }
+
+    .btn-toggle:hover {
+      background-color: #059669;
+    }
+
     .form-group {
       display: flex;
       align-items: center;
@@ -386,8 +396,8 @@
 
   <!-- ================= 頁面 1：首頁 ================= -->
   <section id="page-home" class="view active">
-    <h1 class="home-title">GodMATH - By NUTN</h1>
-    <p style="color: var(--text-muted); margin-bottom: 2rem;">為了解決麻煩問題所以一個小學生絞盡腦汁地寫出了一個小程序</p>
+    <h1 class="home-title">GodMATH</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">為了解決數學麻煩以及原文書解答都只有單數題沒有雙數題的答案所以一位老兄費盡千辛萬苦的花了零個日日夜夜請AI寫出了一個小程序</p>
     <button class="btn-gradient" onclick="navigateTo('page-menu')">進入功能選單</button>
   </section>
 
@@ -572,7 +582,7 @@
   <div id="det-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">行列式、逆矩陣與條件數</h3>
+        <h3 class="modal-title">行列式與逆矩陣分析</h3>
         <button class="close-btn" onclick="closeModal('det-modal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -582,7 +592,7 @@
           <button class="btn btn-primary" onclick="initMatrixInput('det-grid', 'det-n', 'det-n')">生成輸入表</button>
         </div>
         <div id="det-grid" class="matrix-grid-wrapper"></div>
-        <button class="btn btn-primary" onclick="runDetInverse()">分析矩陣 (Det, Trace, Inverse, Condition Number)</button>
+        <button class="btn btn-primary" onclick="runDetInverse()">分析矩陣 (Det, Trace, 逆矩陣)</button>
         <div id="det-output"></div>
       </div>
     </div>
@@ -616,7 +626,7 @@
     </div>
   </div>
 
-  <!-- ================= 彈窗 6：非線性方程求根 ================= -->
+  <!-- ================= 彈窗 6：非線性方程求解 ================= -->
   <div id="root-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -931,7 +941,10 @@
       `;
     }
 
-    // 行列式、逆矩陣與條件數
+    // 全域變數供按鈕切換顯示反矩陣
+    let currentInverseMatrix = null;
+
+    // 行列式與逆矩陣求解 (高斯-若爾當消去法)
     function runDetInverse() {
       const n = parseInt(document.getElementById('det-n').value);
       const A = readMatrixValues('det-grid', n, n);
@@ -947,17 +960,77 @@
         return det;
       }
 
+      function invertMatrix(M) {
+        let size = M.length;
+        let aug = M.map((row, i) => {
+          let identityRow = Array(size).fill(0);
+          identityRow[i] = 1;
+          return [...row, ...identityRow];
+        });
+
+        for (let i = 0; i < size; i++) {
+          let maxRow = i;
+          for (let k = i + 1; k < size; k++) {
+            if (Math.abs(aug[k][i]) > Math.abs(aug[maxRow][i])) maxRow = k;
+          }
+          [aug[i], aug[maxRow]] = [aug[maxRow], aug[i]];
+
+          let pivot = aug[i][i];
+          if (Math.abs(pivot) < 1e-10) return null;
+
+          for (let j = 0; j < 2 * size; j++) aug[i][j] /= pivot;
+
+          for (let k = 0; k < size; k++) {
+            if (k !== i) {
+              let factor = aug[k][i];
+              for (let j = 0; j < 2 * size; j++) aug[k][j] -= factor * aug[i][j];
+            }
+          }
+        }
+        return aug.map(row => row.slice(size));
+      }
+
       let detA = getDet(A);
       let traceA = A.reduce((sum, row, idx) => sum + row[idx], 0);
+      let isNonSingular = Math.abs(detA) > 1e-9;
 
-      document.getElementById('det-output').innerHTML = `
+      if (isNonSingular) {
+        currentInverseMatrix = invertMatrix(A);
+      } else {
+        currentInverseMatrix = null;
+      }
+
+      let html = `
         <div class="result-card">
           <div class="result-title">矩陣基本特徵分析</div>
           <p>行列式 det(A) = <strong>${detA.toFixed(6)}</strong></p>
           <p>跡數 tr(A) = <strong>${traceA.toFixed(6)}</strong></p>
-          <p>可逆性：${Math.abs(detA) > 1e-9 ? '<span style="color:#4ade80">可逆 (Non-singular)</span>' : '<span style="color:#f87171">奇異 (Singular)</span>'}</p>
+          <p>反矩陣狀態：${isNonSingular ? '<span style="color:#4ade80">存在 (行列式 ≠ 0)</span>' : '<span style="color:#f87171">不存在 (行列式 = 0)</span>'}</p>
+          ${isNonSingular ? `
+            <button id="btn-toggle-inverse" class="btn btn-toggle" style="margin-top: 0.75rem;" onclick="toggleInverseResult()">顯示反矩陣</button>
+            <div id="inverse-matrix-container" style="display: none; margin-top: 1rem;">
+              <p style="color:#a5b4fc; font-weight:600; margin-bottom:0.3rem;">反矩陣 A⁻¹：</p>
+              ${renderLaTeX(matrixToLaTeX(currentInverseMatrix))}
+            </div>
+          ` : ''}
         </div>
       `;
+
+      document.getElementById('det-output').innerHTML = html;
+    }
+
+    // 開關顯示/隱藏反矩陣
+    function toggleInverseResult() {
+      const container = document.getElementById('inverse-matrix-container');
+      const btn = document.getElementById('btn-toggle-inverse');
+
+      if (container.style.display === 'none') {
+        container.style.display = 'block';
+        btn.innerText = '隱藏反矩陣';
+      } else {
+        container.style.display = 'none';
+        btn.innerText = '顯示反矩陣';
+      }
     }
 
     // 線性系統疊代法 (Jacobi / Gauss-Seidel / SOR)
